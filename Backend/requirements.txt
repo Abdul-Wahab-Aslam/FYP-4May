@@ -1,0 +1,28 @@
+# V2V Sentinel XAI - Backend dependencies
+# Python 3.9+ compatible
+# NO PyTorch / Ultralytics / YOLOv8 - safe for Render free tier (512 MB RAM)
+#
+# Install: pip install -r requirements.txt
+
+# ---- Web framework ----
+fastapi==0.110.0
+# uvicorn[standard]==0.27.1
+uvicorn
+python-multipart==0.0.9
+
+# ---- Computer Vision (lightweight - no GPU) ----
+opencv-python-headless==4.9.0.80
+
+# ---- AI / ML pipeline ----
+# joblib: loads the 4 trained .pkl files
+joblib==1.3.2
+# scikit-learn: provides StandardScaler + IsolationForest classes
+scikit-learn==1.4.2
+# xgboost: loads and runs the trained XGBoost classifier
+xgboost==2.0.3
+
+# ---- Database (Supabase microservice) ----
+supabase==2.4.3
+
+# ---- Utilities ----
+numpy==1.26.4

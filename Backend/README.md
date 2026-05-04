@@ -1,102 +1,135 @@
-# SecureV2V-XAI — Bahria University FYP
+# V2V Sentinel XAI — Backend
 
-**Secure V2V Communication using AI** — Abdul Wahab Aslam
+FastAPI server that loads the hybrid XGBoost + LSTM models trained in
+`train_veremi.py` and streams real-time threat detection over WebSocket.
 
-An Explainable AI (XAI) framework for detecting vehicular network attacks in real-time V2V communications.
+## Folder Layout
 
----
-
-## 🚀 Deploy on Vercel (Frontend)
-
-### Option 1: Vercel CLI
-```bash
-cd frontend
-npm install
-npm run build
-vercel --prod
+```
+v2v-backend/
+├── main.py                 # FastAPI app (REST + WebSocket)
+├── train_veremi.py         # Colab training script (run on Colab GPU)
+├── requirements.txt        # Pinned dependencies
+└── artifacts/              # <-- put trained .pkl files here
+    ├── xgb_model.pkl
+    ├── lstm_model.h5
+    ├── scaler.pkl
+    ├── label_encoder.pkl
+    ├── shap_explainer.pkl
+    └── feature_columns.json
 ```
 
-### Option 2: Vercel GitHub Integration (Recommended)
-1. Push this repo to GitHub
-2. Go to [vercel.com](https://vercel.com) → New Project → Import GitHub repo
-3. Set **Root Directory** → `frontend`
-4. Set **Framework Preset** → `Create React App`
-5. Add environment variables (optional):
-   - `REACT_APP_BACKEND_URL` = your backend URL
-   - `REACT_APP_WS_URL` = your WebSocket URL
-   - `REACT_APP_SUPABASE_URL` = your Supabase project URL
-   - `REACT_APP_SUPABASE_ANON` = your Supabase anon key
-6. Click **Deploy**
-
----
-
-## 🛠 Local Development
+## Setup (5 min)
 
 ```bash
-cd frontend
-npm install
-npm start
-```
-Open [http://localhost:3000](http://localhost:3000)
+# 1. Create a virtualenv
+python -m venv venv
+source venv/bin/activate            # Windows: venv\Scripts\activate
 
----
+# 2. Install deps
+pip install -r requirements.txt
 
-## 📁 Project Structure
+# 3. (Optional) Drop your trained artifacts/ folder in
+#    The server runs in MOCK MODE if artifacts are missing — useful for
+#    frontend development before the Colab job finishes.
 
-```
-SecureV2V-XAI/
-├── frontend/               ← React app (deploy to Vercel)
-│   ├── public/
-│   │   ├── index.html
-│   │   └── demo_accident.mp4
-│   ├── src/
-│   │   ├── App.js          ← Main dashboard
-│   │   ├── App.css         ← Dark/light theme styles
-│   │   └── bu-logo.png
-│   ├── package.json
-│   └── .env                ← Backend URL config
-├── Backend/                ← Python FastAPI backend
-│   ├── main.py
-│   ├── requirements.txt
-│   └── *.pkl / *.pt        ← Trained models
-└── vercel.json             ← Vercel deployment config
+# 4. Run
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
----
+Open http://localhost:8000/docs for the auto-generated Swagger UI.
 
-## 🔧 Fixes Applied (Debugged Version)
+## Endpoints
 
-| # | Issue | Fix |
-|---|-------|-----|
-| 1 | `@gradio/client` & `lucide-react` listed in `package.json` but not imported | Removed unused dependencies |
-| 2 | `react@^19` incompatible with `react-scripts@5.0.1` | Downgraded to `react@^18.3.1` |
-| 3 | Bare `catch {}` blocks (ES2019) may fail in some CRA babel configs | Changed to `catch (_err) {}` |
-| 4 | Wrong WS_URL in `.env` (`/ws/v2v-metrics` instead of `/ws`) | Fixed endpoint path |
-| 5 | Generic `<title>React App</title>` in `index.html` | Replaced with branded title |
-| 6 | Missing `vercel.json` — SPA routes 404 on refresh | Added `vercel.json` with SPA fallback routing |
-| 7 | Stale `package-lock.json` | Removed — regenerates on `npm install` |
-| 8 | `__pycache__` committed to repo | Removed |
+| Method | Path           | Purpose                                          |
+| ------ | -------------- | ------------------------------------------------ |
+| GET    | `/`            | Liveness check                                   |
+| GET    | `/api/health`  | Detailed model status (loaded?, accuracy, …)     |
+| GET    | `/api/metrics` | Training metrics + active vehicle/attacker count |
+| POST   | `/api/predict` | One-shot threat classification + SHAP            |
+| WS     | `/ws`          | Live telemetry + threat stream (~800ms cadence)  |
 
----
+## WebSocket Message Format
 
-## 🌐 Features
+The frontend receives one JSON object per tick:
 
-- **Live V2V Radar** — animated network topology with threat detection
-- **CARLA Simulation** — real-time canvas-based vehicle animation
-- **YOLOv8 Dashcam Inference** — upload frames or snapshot from demo video → HF Space AI
-- **SHAP Explainability** — live feature contribution chart per threat
-- **Real-time Intel Feed** — WebSocket + mock fallback telemetry stream
-- **Dataset KPI Bar** — accuracy/precision/recall/F1 per dataset
-- **Dark/Light Theme** — full CSS variable driven theming
+```jsonc
+{
+  "type": "tick",
+  "timestamp": "2026-04-26T14:32:08.234Z",
+  "vehicle_id": "EV-03",
+  "telemetry": {
+    "sender": 3, "pos_x": 1240.3, "pos_y": 880.1, "pos_z": 0.2,
+    "spd_x": 14.2, "spd_y": -3.1, "spd_z": 0.0, "...": "..."
+  },
+  "prediction": {
+    "label": "AltSpoof",
+    "confidence": 97.4,
+    "probabilities": { "Normal": 1.2, "GPSSpoof": 0.8, "AltSpoof": 97.4, "SpeedInj": 0.6 },
+    "explanation": [
+      { "feature": "altitude_jump",    "impact": 0.42, "value": 18.3, "direction": "increases_threat" },
+      { "feature": "altitude_abs",     "impact": 0.38, "value": 47.5, "direction": "increases_threat" },
+      { "feature": "pos_z",            "impact": 0.31, "value": 47.5, "direction": "increases_threat" }
+    ],
+    "latency_ms": 24.3
+  }
+}
+```
 
----
+## Wiring it into your React frontend
 
-## 🧠 Models
+Drop this into `App.js` to replace the mock `IntelFeed` data. Just three lines
+of plumbing — the rest is the same component you already have:
 
-| Model | Purpose |
-|-------|---------|
-| `v2v_xgboost_model.pkl` | V2V attack classification |
-| `v2v_isolation_forest.pkl` | Anomaly detection |
-| `v2v_scaler.pkl` | Feature normalization |
-| `v2v_label_encoder.pkl` | Label encoding |
-| `yolov8n.pt` | Dashcam object/crash detection |
+```jsx
+useEffect(() => {
+  const ws = new WebSocket("ws://localhost:8000/ws");
+
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type !== "tick") return;
+
+    const { vehicle_id, prediction } = data;
+    const isThreat = prediction.label !== "Normal";
+    const msg = isThreat
+      ? `[${vehicle_id}] ${prediction.label} — ${prediction.explanation[0]?.feature ?? ""}`
+      : `[${vehicle_id}] Normal BSM — Clear`;
+
+    setLogs(prev => [{
+      ts:   new Date().toTimeString().slice(0, 8) + "." + String(Math.floor(Math.random()*999)).padStart(3,"0"),
+      msg,
+      conf: prediction.confidence,
+    }, ...prev].slice(0, 20));
+  };
+
+  return () => ws.close();
+}, []);
+```
+
+For production, swap `ws://localhost:8000/ws` for your deployed URL
+(e.g., `wss://v2v-api.onrender.com/ws`) via an env var:
+`process.env.REACT_APP_WS_URL`.
+
+## Deployment
+
+The backend deploys cleanly to:
+- **Render** (free tier, supports WebSocket)
+- **Railway** (one-click Python deploy)
+- **Fly.io** (best for low-latency WS)
+
+⚠️ Vercel does **not** support persistent WebSockets on its serverless tier —
+keep the React frontend on Vercel and the FastAPI backend on Render/Railway.
+
+### Slim deployment without TensorFlow
+
+If you only ship the XGBoost model (which alone hits ~96–98% on VeReMi),
+comment out the `tensorflow` line in `requirements.txt` — your Docker image
+drops from ~600 MB to ~80 MB. The code already gracefully falls back to
+XGB-only inference if the LSTM file is missing.
+
+## Mock Mode
+
+If `./artifacts/` is missing or incomplete, the server boots in **MOCK MODE**:
+predictions are realistic random data with the same schema as real ones. This
+lets you build/test the React side while the Colab training is still running.
+Look for `"_mock": true` in the prediction payload to detect it.
