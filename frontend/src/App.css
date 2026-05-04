@@ -1,0 +1,1187 @@
+/* ============================================================
+   Secure V2V Communication using AI - App.css
+   CSS-variable-driven dark / light theme
+   Radar is hardcoded dark-navy in BOTH themes.
+   System fonts only - no external imports.
+   ============================================================ */
+
+/* ==== DARK THEME (default) ==================================== */
+:root,
+[data-theme="dark"] {
+  --bg-deep:         #0a0e1a;
+  --bg-darker:       #060912;
+  --bg-panel:        #0d1526;
+  --bg-sub:          #0a1220;
+  --bg-darker-sub:   #060d18;
+
+  --border:          #1a2a45;
+  --border-soft:     #1a3050;
+  --border-hard:     #1e4080;
+
+  --accent-blue:     #4a9eff;
+  --accent-blue-dim: #7ab8ff;
+  --accent-green:    #1adf6a;
+  --accent-red:      #df3a1a;
+  --accent-orange:   #ff9040;
+  --accent-purple:   #a060ff;
+
+  --text-main:       #c8d6e8;
+  --text-mid:        #8aaccc;
+  --text-dim:        #4a6a8a;
+  --text-faint:      #3a6090;
+
+  --panel-shadow:    none;
+  --input-bg:        #0a1220;
+}
+
+/* ==== LIGHT THEME ============================================= */
+/*
+ * Design goals:
+ *   - Soft warm gray-blue background (NOT blinding white)
+ *   - Pure white panels with a subtle drop-shadow so they "pop"
+ *   - Very dark slate text for maximum contrast (WCAG AA compliant)
+ *   - Saturated-but-not-neon accent colors (darker than dark-theme)
+ *   - Radar container keeps a HARDCODED dark background (see below)
+ */
+[data-theme="light"] {
+  --bg-deep:         #eef2f7;
+  --bg-darker:       #dce4ef;
+  --bg-panel:        #ffffff;
+  --bg-sub:          #f1f5fa;
+  --bg-darker-sub:   #e6ecf5;
+
+  --border:          #c2cfe0;
+  --border-soft:     #adbdd4;
+  --border-hard:     #7d9cbf;
+
+  --accent-blue:     #1558b0;
+  --accent-blue-dim: #1e6fcc;
+  --accent-green:    #0a6b30;
+  --accent-red:      #b71c0a;
+  --accent-orange:   #b35000;
+  --accent-purple:   #5820a8;
+
+  --text-main:       #0f172a;
+  --text-mid:        #253a55;
+  --text-dim:        #4a6070;
+  --text-faint:      #6080a0;
+
+  --panel-shadow:    0 1px 4px rgba(15, 23, 42, 0.10),
+                     0 4px 16px rgba(15, 23, 42, 0.06);
+  --input-bg:        #f1f5fa;
+}
+
+/* ============================================================
+   RESET + BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.28s ease, color 0.28s ease;
+}
+
+/* ============================================================
+   APP CONTAINER
+   ============================================================ */
+.vs-app {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.28s ease;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.vs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 22px;
+  background: var(--bg-darker);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 16px;
+  transition: background 0.28s ease, border-color 0.28s ease;
+}
+
+.vs-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+/* Logo wrapper keeps a fixed size and prevents layout shifts
+   when the image loads or the SVG fallback renders */
+.vs-logo-wrap {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Both <img> and fallback <svg> inherit this */
+.vs-logo-img {
+  height: 50px;
+  width: auto;
+  max-width: 52px;
+  object-fit: contain;
+  display: block;
+}
+
+/* In dark mode the external SVG may have white parts that disappear
+   on a very dark header - brighten it slightly */
+[data-theme="dark"] .vs-logo-img {
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.15));
+}
+
+[data-theme="light"] .vs-logo-img {
+  filter: none;
+}
+
+.vs-header-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.vs-brand-univ {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-blue-dim);
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+.vs-brand-fyp {
+  font-size: 9px;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+}
+
+.vs-header-title {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+/* clamp() ensures the long title fits on one line at all common widths */
+.vs-header-title h1 {
+  font-size: clamp(12px, 1.55vw, 20px);
+  font-weight: 700;
+  color: var(--accent-blue-dim);
+  letter-spacing: clamp(1px, 0.2vw, 3px);
+  text-shadow: 0 0 10px rgba(74, 158, 255, 0.25);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme="light"] .vs-header-title h1 {
+  text-shadow: none;
+}
+
+.vs-subtitle {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.vs-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* Theme toggle */
+.vs-theme-btn {
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  color: var(--text-mid);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  outline: none;
+  letter-spacing: 0.4px;
+}
+
+.vs-theme-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.3);
+}
+
+.vs-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--accent-green);
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.vs-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+  animation: vs-pulse 1.5s infinite;
+}
+
+@keyframes vs-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.vs-clock {
+  font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: var(--accent-blue);
+  background: var(--input-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 4px 10px;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   DATASET KPI BAR
+   ============================================================ */
+.vs-kpibar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 2.5fr;
+  gap: 10px;
+  margin: 10px 10px 0 10px;
+  padding: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--panel-shadow);
+  transition: background 0.28s ease, border-color 0.28s ease;
+}
+
+.vs-kpibar-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+}
+
+.vs-kpibar-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.vs-dataset-select {
+  background: var(--input-bg);
+  border: 1px solid var(--border-hard);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.vs-dataset-select:hover,
+.vs-dataset-select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.25);
+}
+
+.vs-dataset-select option {
+  background: var(--bg-panel);
+  color: var(--text-main);
+}
+
+.vs-kpibar-desc {
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.vs-kpibar-right {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.vs-kpi-card {
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.28s ease;
+}
+
+[data-theme="light"] .vs-kpi-card {
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07);
+}
+
+.vs-kpi-card-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.vs-kpi-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
+  line-height: 1;
+}
+
+.vs-kpi-pct {
+  font-size: 12px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.vs-kpi-card-bar {
+  height: 3px;
+  background: rgba(74, 158, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.vs-kpi-card-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease-out;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.vs-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 10px;
+  padding: 10px;
+  flex: 1;
+}
+
+/* ============================================================
+   THEORY SIDEBAR
+   ============================================================ */
+.vs-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-soft) transparent;
+}
+
+.vs-sidebar::-webkit-scrollbar { width: 6px; }
+.vs-sidebar::-webkit-scrollbar-track { background: transparent; }
+.vs-sidebar::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+.vs-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  position: relative;
+  box-shadow: var(--panel-shadow);
+  transition: background 0.28s ease, border-color 0.28s ease;
+}
+
+.vs-panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.vs-text {
+  font-size: 11px;
+  color: var(--text-mid);
+  line-height: 1.65;
+}
+
+.vs-ws-status {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+/* Sidebar lists ------------------------------------------------ */
+.vs-obj-list { list-style: none; }
+
+.vs-obj-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-mid);
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.vs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.vs-novelty-list { list-style: none; }
+
+.vs-novelty-list li {
+  font-size: 10px;
+  color: var(--text-mid);
+  background: var(--bg-sub);
+  border-left: 2px solid var(--accent-green);
+  padding: 5px 8px;
+  margin-bottom: 4px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
+.vs-novelty-list b { color: var(--accent-green); font-weight: 600; }
+
+.vs-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.vs-pf-node {
+  background: var(--bg-sub);
+  border: 1px solid var(--border-hard);
+  border-radius: 5px;
+  padding: 5px 4px;
+  font-size: 8px;
+  color: var(--accent-blue);
+  text-align: center;
+  flex: 1;
+  min-width: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.vs-pf-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.vs-pf-arrow {
+  color: var(--text-faint);
+  font-size: 11px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ============================================================
+   MAIN GRIDS
+   ============================================================ */
+.vs-main { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+.vs-row { display: grid; gap: 10px; }
+.vs-row-top   { grid-template-columns: 1fr 1fr; }
+.vs-row-mid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.vs-row-bot-1 { grid-template-columns: 1fr; }
+
+/* ============================================================
+   LIVE RADAR
+   KEY FIX: .vs-radar-area is HARDCODED dark navy in all themes.
+   This prevents the SVG grid lines and nodes vanishing on a
+   white background in light mode. The dark panel creates the
+   "military-grade" look independent of --bg-darker-sub.
+   ============================================================ */
+.vs-radar-panel { display: flex; flex-direction: column; }
+
+.vs-radar-area {
+  flex: 1;
+  /* Hardcoded - not a CSS variable - intentional */
+  background: #0b1121;
+  border-radius: 6px;
+  border: 2px solid #1c3058;
+  overflow: hidden;
+  min-height: 240px;
+  margin-top: 6px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* In light mode, give the radar a slightly more prominent border
+   so the dark inset doesn't feel disconnected from the white panel */
+[data-theme="light"] .vs-radar-area {
+  border-color: #2a4a70;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+.vs-metric-row { display: flex; gap: 6px; margin-top: 8px; }
+
+.vs-metric {
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 5px;
+  padding: 5px 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.vs-metric span { font-size: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.vs-metric b    { font-size: 14px; font-weight: 600; color: var(--accent-green); margin-top: 2px; }
+.vs-red   { color: var(--accent-red)   !important; }
+.vs-green { color: var(--accent-green) !important; }
+
+/* ============================================================
+   CARLA SIMULATION
+   ============================================================ */
+.vs-carla-area {
+  background: #060d18;   /* hardcoded - canvas always dark */
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   LATENCY CHART
+   ============================================================ */
+.vs-kpi-row { display: flex; gap: 6px; margin-top: 8px; }
+
+.vs-kpi {
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 5px;
+  padding: 6px 8px;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.vs-kpi b    { font-size: 14px; font-weight: 600; color: var(--accent-green); }
+.vs-kpi span { font-size: 8px; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ============================================================
+   SHARED BADGES / OVERLAYS
+   ============================================================ */
+.vs-section-badge {
+  display: inline-block;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 8px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+
+.vs-section-badge-yolo {
+  background: rgba(160, 96, 255, 0.1);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+.vs-video-overlay {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 9px;
+  color: #ff6060;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px 8px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+  z-index: 5;
+}
+
+.vs-rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #df3a1a;
+  animation: vs-pulse 1s infinite;
+}
+
+.vs-video-stats { display: flex; gap: 6px; margin-top: 8px; }
+
+.vs-stat {
+  flex: 1;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 5px;
+  padding: 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.vs-stat span { font-size: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.vs-stat b    { font-size: 13px; font-weight: 600; color: var(--accent-blue); margin-top: 2px; }
+.vs-stat-alert { border-color: var(--accent-red); }
+.vs-stat-alert b { color: var(--accent-red); }
+
+/* ============================================================
+   DASHCAM YOLO PANEL
+   ============================================================ */
+.vs-dashcam-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.vs-video-actions { display: flex; gap: 6px; }
+
+.vs-btn {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  outline: none;
+}
+
+.vs-btn-primary {
+  background: var(--accent-blue);
+  color: #fff;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
+}
+
+.vs-btn-primary:hover {
+  background: var(--accent-blue-dim);
+  border-color: var(--accent-blue-dim);
+}
+
+.vs-btn-ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border-color: var(--border-hard);
+}
+
+.vs-btn-ghost:hover {
+  color: var(--text-main);
+  border-color: var(--accent-blue);
+}
+
+.vs-video-filename {
+  font-size: 10px;
+  color: var(--accent-green);
+  font-family: "Courier New", monospace;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.vs-dashcam-stage {
+  position: relative;
+  width: 100%;
+  height: 460px;
+  background: #000;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.vs-dashcam-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  z-index: 1;
+  display: block;
+}
+
+/* Placeholder (idle / uploading / error) */
+.vs-dashcam-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at center, rgba(74,158,255,0.05), transparent 70%),
+    repeating-linear-gradient(45deg, #060d18 0 12px, #08111e 12px 24px);
+  text-align: center;
+  padding: 20px;
+}
+
+[data-theme="light"] .vs-dashcam-placeholder {
+  background:
+    radial-gradient(ellipse at center, rgba(21,88,176,0.05), transparent 70%),
+    repeating-linear-gradient(45deg, #e2e9f4 0 12px, #d5dfee 12px 24px);
+}
+
+.vs-dashcam-placeholder-error {
+  background: rgba(40, 8, 5, 0.9) !important;
+}
+
+.vs-dashcam-placeholder-icon {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  font-family: "Courier New", monospace;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+}
+
+.vs-dashcam-placeholder-text {
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.vs-dashcam-placeholder-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: "Courier New", monospace;
+}
+
+.vs-dashcam-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--border-soft);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: vs-spin 0.8s linear infinite;
+  margin-bottom: 14px;
+}
+
+@keyframes vs-spin { to { transform: rotate(360deg); } }
+
+.vs-dashcam-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  background: rgba(0, 0, 0, 0.80);
+}
+
+.vs-status-good { border-color: #1adf6a; color: #1adf6a; }
+.vs-status-bad  { border-color: #df3a1a; color: #ff6a4a; animation: vs-badge-flash 0.6s infinite; }
+
+@keyframes vs-badge-flash {
+  0%, 100% { background: rgba(0, 0, 0, 0.80); }
+  50%      { background: rgba(80, 10, 4, 0.90); }
+}
+
+.vs-status-dot-mini {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 5px currentColor;
+}
+
+.vs-dashcam-hud-bl {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 5;
+  font-size: 10px;
+  color: #7ab8ff;
+  background: rgba(0, 0, 0, 0.72);
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(74, 158, 255, 0.35);
+}
+
+.vs-dashcam-stats { display: flex; gap: 6px; margin-top: 10px; }
+
+/* ============================================================
+   INTEL FEED
+   ============================================================ */
+.vs-intel-log {
+  background: var(--bg-darker-sub);
+  border-radius: 6px;
+  height: 230px;
+  overflow-y: auto;
+  padding: 6px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-soft) transparent;
+  border: 1px solid var(--border);
+}
+
+.vs-intel-log::-webkit-scrollbar { width: 6px; }
+.vs-intel-log::-webkit-scrollbar-track { background: transparent; }
+.vs-intel-log::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
+
+.vs-log-entry {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.vs-log-ts   { font-size: 9px; color: var(--text-faint); min-width: 70px; font-family: "Courier New", monospace; }
+.vs-log-msg  { font-size: 10px; color: var(--text-mid); flex: 1; font-family: "Courier New", monospace; }
+.vs-log-conf { font-size: 9px; font-weight: 700; min-width: 42px; text-align: right; font-family: "Courier New", monospace; }
+
+/* ============================================================
+   SHAP XAI PANEL
+   ============================================================ */
+.vs-shap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.vs-shap-label { font-size: 8px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+.vs-shap-vid   { font-size: 13px; font-weight: 700; color: var(--accent-blue-dim); margin-top: 2px; font-family: "Courier New", monospace; }
+
+.vs-shap-attack { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+
+.vs-shap-attack-label {
+  background: rgba(223, 58, 26, 0.12);
+  border: 1px solid var(--accent-red);
+  color: var(--accent-red);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: "Courier New", monospace;
+}
+
+.vs-shap-attack-conf { font-size: 10px; color: var(--text-mid); font-family: "Courier New", monospace; }
+
+.vs-shap-chart {
+  background: var(--bg-darker-sub);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 165px;
+}
+
+.vs-shap-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px;
+  align-items: center;
+  gap: 8px;
+  font-family: "Courier New", monospace;
+}
+
+.vs-shap-feature { font-size: 9px; color: var(--text-mid); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.vs-shap-bar-track {
+  position: relative;
+  height: 14px;
+  background: var(--bg-sub);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vs-shap-bar-axis { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-hard); }
+
+.vs-shap-bar-fill {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  border-radius: 1px;
+  transition: width 0.4s ease-out;
+}
+
+.vs-shap-bar-pos { background: linear-gradient(90deg, rgba(223,58,26,0.35), var(--accent-red)); }
+.vs-shap-bar-neg { background: linear-gradient(270deg, rgba(74,158,255,0.35), var(--accent-blue)); }
+.vs-shap-impact  { font-size: 10px; font-weight: 700; text-align: right; }
+
+.vs-shap-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 8px;
+  color: var(--text-dim);
+}
+
+.vs-legend-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   DATASET TABLE
+   ============================================================ */
+.vs-table-wrap {
+  background: var(--bg-darker-sub);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: auto;
+  max-height: 280px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-soft) transparent;
+}
+
+.vs-table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+.vs-table-wrap::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
+
+.vs-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+}
+
+.vs-data-table thead { position: sticky; top: 0; background: var(--bg-sub); z-index: 1; }
+
+.vs-data-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.vs-data-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
+.vs-data-table tbody tr:hover { background: rgba(74, 158, 255, 0.04); }
+.vs-data-table tbody tr:last-child td { border-bottom: none; }
+.vs-td-mono { font-family: "Courier New", monospace; color: var(--text-mid); }
+
+.vs-td-pkt {
+  display: inline-block;
+  background: var(--bg-sub);
+  border: 1px solid var(--border-soft);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 0.5px;
+}
+
+.vs-td-label {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.vs-footer {
+  background: var(--bg-darker);
+  border-top: 1px solid var(--border);
+  padding: 8px 22px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: background 0.28s ease;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1300px) {
+  .vs-row-mid-3 { grid-template-columns: 1fr 1fr; }
+  .vs-row-mid-3 > .vs-panel:nth-child(3) { grid-column: 1 / -1; }
+}
+
+@media (max-width: 1100px) {
+  .vs-layout { grid-template-columns: 1fr; }
+  .vs-sidebar { max-height: none; }
+  .vs-row-top, .vs-row-mid-3 { grid-template-columns: 1fr; }
+  .vs-row-mid-3 > .vs-panel:nth-child(3) { grid-column: auto; }
+  .vs-kpibar { grid-template-columns: 1fr; }
+  .vs-kpibar-left { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 10px; }
+  .vs-dashcam-stage { height: 340px; }
+}
+
+@media (max-width: 900px) {
+  .vs-header-title h1 { font-size: 12px; letter-spacing: 1px; }
+}
+
+@media (max-width: 700px) {
+  .vs-header { flex-direction: column; gap: 8px; }
+  .vs-header-left, .vs-header-right { min-width: auto; }
+  .vs-header-title h1 { white-space: normal; font-size: 14px; letter-spacing: 1px; }
+  .vs-kpibar-right { grid-template-columns: repeat(2, 1fr); }
+  .vs-kpi-card-value { font-size: 18px; }
+  .vs-metric-row, .vs-kpi-row, .vs-video-stats, .vs-dashcam-stats { flex-wrap: wrap; }
+  .vs-shap-row { grid-template-columns: 70px 1fr 40px; }
+  .vs-dashcam-stage { height: 260px; }
+}
+
+/* ============================================================
+   ADDITIONS: WS badge simulation state + dashcam upload overlay
+   ============================================================ */
+
+/* Header WebSocket / simulation badge */
+.vs-ws-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.vs-ws-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+
+.vs-ws-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: vs-pulse 1.4s infinite;
+}
+
+/* Green when real WS is live */
+.vs-ws-connected {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+  background: rgba(26, 223, 106, 0.08);
+}
+
+/* Blue-teal when running local simulation — never red */
+.vs-ws-simulation {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+.vs-ws-updated {
+  font-size: 9px;
+  color: var(--text-faint);
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.3px;
+}
+
+/* Upload overlay — centered spinner over dimmed default video */
+.vs-dashcam-upload-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 13, 24, 0.55);
+  text-align: center;
+  padding: 20px;
+}
