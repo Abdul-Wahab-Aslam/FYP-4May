@@ -31,8 +31,8 @@ const METRICS_WS_URL =
 // Named API path (Gradio 4.x): POST /call/detect_accident → { event_id }
 //                               GET  /call/detect_accident/{id} → SSE
 // Fallback (Gradio 3.x):        POST /api/predict { fn_index:0, data:[...] }
-// const HF_SPACE = "https://real-wahab-v2v-crash-detector.hf.space";
-const HF_SPACE = "https://zahid-aslam-v2v-accident-detection.hf.space";
+const HF_SPACE = "https://real-wahab-v2v-accident-detection.hf.space";
+// const HF_SPACE = "https://zahid-aslam-v2v-accident-detection.hf.space";
 const HF_NAMED = HF_SPACE + "/call/detect_accident";
 const HF_PRED  = HF_SPACE + "/api/predict";
 
