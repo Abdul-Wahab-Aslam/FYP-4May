@@ -7,7 +7,7 @@ __pycache__/
 .env
 *.pkl
 *.pt
-
+runs/
 # Node
 node_modules/
 /frontend/build
