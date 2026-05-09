@@ -61,7 +61,7 @@ SecureV2V-XAI/
 │   └── *.pkl / *.pt        ← Trained models
 └── vercel.json             ← Vercel deployment config
 ```
-
+Download the trained weights (best.pt) from our Hugging Face Space and place them in the weights folder for local inference.
 ---
 
 ## 🔧 Fixes Applied (Debugged Version)
@@ -100,3 +100,6 @@ SecureV2V-XAI/
 | `v2v_scaler.pkl` | Feature normalization |
 | `v2v_label_encoder.pkl` | Label encoding |
 | `yolov8n.pt` | Dashcam object/crash detection |
+
+
+
