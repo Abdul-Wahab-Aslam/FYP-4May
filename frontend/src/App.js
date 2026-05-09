@@ -31,13 +31,32 @@ const METRICS_WS_URL =
 // Named API path (Gradio 4.x): POST /call/detect_accident → { event_id }
 //                               GET  /call/detect_accident/{id} → SSE
 // Fallback (Gradio 3.x):        POST /api/predict { fn_index:0, data:[...] }
-const HF_SPACE = "https://real-wahab-v2v-accident-detection.hf.space";
+// const HF_SPACE = "https://real-wahab-v2v-accident-detection.hf.space";
 // const HF_SPACE = "https://zahid-aslam-v2v-accident-detection.hf.space";
-const HF_NAMED = HF_SPACE + "/call/detect_accident";
+// const HF_SPACE = "https://real-wahab-v2v-accident-detection.hf.space";
+// const HF_NAMED = HF_SPACE + "/call/detect_accident";
+// const HF_NAMED = HF_SPACE + "/predict";
+// const HF_PRED  = HF_SPACE + "/api/predict";
+
+
+// // Supabase — accident_alerts table (set in Vercel env vars)
+// // Build succeeds even when these are absent; the insert is silently skipped.
+// const SUPA_URL = process.env.REACT_APP_SUPABASE_URL  || "";
+// const SUPA_KEY = process.env.REACT_APP_SUPABASE_ANON || "";
+// =====================================================================
+// CONFIG — Updated for Real-Wahab Hugging Face Space
+// =====================================================================
+
+// Hugging Face Space — Image & Video Inference
+const HF_SPACE = "https://real-wahab-v2v-accident-detection.hf.space";
+
+// Named API path (Gradio 4.x style)
+const HF_NAMED = HF_SPACE + "/call/predict_crash"; 
+
+// Fallback Predict path (Gradio 3.x / API style)
 const HF_PRED  = HF_SPACE + "/api/predict";
 
 // Supabase — accident_alerts table (set in Vercel env vars)
-// Build succeeds even when these are absent; the insert is silently skipped.
 const SUPA_URL = process.env.REACT_APP_SUPABASE_URL  || "";
 const SUPA_KEY = process.env.REACT_APP_SUPABASE_ANON || "";
 
